@@ -1,0 +1,62 @@
+private: System::Void trainingToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+
+
+	if (numSample < 2) {
+		MessageBox::Show("Lütfen doğru örnek sayısı giriniz!");
+		return;
+	}
+
+	int epochs = 1000; 
+	float learningRate = 0.01f;
+	float error;
+	float totalerror = 0.0f;
+
+	chart1->Series["Series1"]->Points->Clear();
+	textBox1->Text = "";
+
+	for (int epoch = 0; epoch < epochs; ++epoch) {
+		totalerror = 0.0;
+		textBox1->Text += epoch + ".Epoch\r\n";
+		for (int i = 0; i < numSample; ++i) {
+
+			// Forward pass
+			float output = 0.0f;
+			for (int j = 0; j < inputDim; ++j) {
+				output += Samples[i * inputDim + j] * Weights[j];
+			}
+			output += bias[0];
+
+			//activation function(sigmoid) 
+			output = (output > 0.0f) ? 1.0f : 0.0f;
+
+			//Calculate Error
+			 error = targets[i] - output;
+			 textBox1->Text += error + "\r\n";
+			 totalerror += abs(error);
+
+			// Backward pass: update weights and bias
+			if(error!=0)
+			{ 
+				for (int j = 0; j < inputDim; ++j) {
+					Weights[j] += learningRate * error * Samples[i * inputDim + j];
+				}
+			}
+			bias[0] += learningRate * error;
+		}
+		chart1->Series["Series1"]->Points->AddXY(epoch, totalerror);
+
+		//Error Check
+		if (totalerror == 0)
+		{
+			MessageBox::Show("Eğitim Tamamlandı...");
+			break;
+		}
+	
+
+	
+	}
+
+
+
+
+}
